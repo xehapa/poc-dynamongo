@@ -7,6 +7,7 @@ const app = <Express>express();
 
 const client = new Client().connect();
 const table = new Table();
+const collection = new Collections();
 
 app.get('/', async (_, res: Response) => {
   return res.send(`Successfully connected to Dynamo DB with API Version: ${client.config.apiVersion}`);
@@ -25,13 +26,10 @@ app.get('/table/delete', async (_, res: Response) => {
 });
 
 app.get('/data/write', async (_, res: Response) => {
-  const collection = new Collections();
-  const result = await collection.create()
-  return res.json(result)
+  return res.json(await collection.create())
 });
 
 app.get('/data/read', async (req: Request, res: Response) => {
-  const collection = new Collections();
   return res.json(await collection.read())
 })
 
