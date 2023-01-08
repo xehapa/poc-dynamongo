@@ -1,0 +1,14 @@
+### List Table
+GET http://localhost:4041/tables
+
+### Create Table
+GET http://localhost:4041/table/create
+
+### Delete Table
+GET http://localhost:4041/table/delete
+
+### Create Collections
+GET http://localhost:4041/data/write
+
+### Get Collections
+GET http://localhost:4041/data/read
