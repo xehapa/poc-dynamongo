@@ -12,13 +12,16 @@ export class Collections {
 
   constructor() {
     this.db = new Client().connect();
-    this.docClient = DynamoDBDocumentClient.from(this.db, this.getOptions());
+    this.docClient = DynamoDBDocumentClient.from(this.db, this.marshallOptions);
   }
 
+  /**
+   * Will make batch write request (array length / 25) times
+   */
   async create() {
-    const items = await this.makeData();
+    const items = await this.makeData(73);
     const itemCount = items.length;
-    const partLen = 10;
+    const partLen = 25;
     const partialItems = splitEvery(partLen, items);
 
     for (let i = 0; i < Math.round(itemCount / partLen); i++) {
@@ -41,19 +44,18 @@ export class Collections {
     return partialItems;
   }
 
-  async read() {
+  async read(): Promise<AggregatedItem | null> {
     const data = await this.docClient.send(new ExecuteStatementCommand({
       Statement: `SELECT *
                   FROM ${Table.tableName}
-                  where Id != ?`,
-      Parameters: ['DAILY-Katherine-Gusikowski'],
-      Limit: 1,
+                  where QuestionData[0].Answer = ? `,
+      Parameters: ['West sticky hertz South innovative'],
     }));
 
-    return data.Items;
+    return <AggregatedItem | null>data.Items?.pop();
   }
 
-  private getOptions(): TranslateConfig {
+  private get marshallOptions(): TranslateConfig {
     return {
       marshallOptions: { convertEmptyValues: true, removeUndefinedValues: true, convertClassInstanceToMap: false },
       unmarshallOptions: { wrapNumbers: false }
